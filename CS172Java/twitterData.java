@@ -22,7 +22,7 @@ public class twitterData {
     		.setOAuthConsumerSecret("fetMzlsvMQsVu3I9k3O4yb1fbgDFy9GoXMyTcNnaCiHeQhMVMw")
     		.setOAuthAccessToken("982370303991889920-rqwZSEhHG3ln8YkoRacp0IP2w4OAOAV")
     		.setOAuthAccessTokenSecret("Z8TOwjlN3tl30CnMhI2yHanCJirdJn0eOwdweHhA6M1C4");
-    	
+    /*	
     	TwitterStream ts = new TwitterStreamFactory().getInstance();    	
         StatusListener listener = new StatusListener() {
 
@@ -67,12 +67,18 @@ public class twitterData {
             }
 
         };
+     */   
     	TwitterFactory tf = new TwitterFactory(cb.build());
     	twitter4j.Twitter twitter = tf.getInstance();
     	
-//    	List<Status> status = twitter.getHomeTimeline();
+    	List<Status> status = twitter.getHomeTimeline();
     	 
-    	ts.addListener(listener);
+    	for (Status st : status)
+    	{
+    		System.out.println(st.getGeoLocation());
+    		System.out.println("@"+st.getUser().getName() + ": " + st.getText());
+    	}
+//    	ts.addListener(listener);
     	
     	  
     }
