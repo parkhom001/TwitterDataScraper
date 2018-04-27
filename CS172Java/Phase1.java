@@ -1,4 +1,4 @@
-package cs172_phase1_v2;
+package cs172_phase1;
 import java.util.*;
 
 import org.jsoup.Jsoup;
@@ -18,7 +18,7 @@ import twitter4j.StatusListener;
 
 
 
-public class Phase1 {
+public class phase1 {
 	public static boolean fileOpen = false;
 	public static String directory = "";
 	public static int fileCount = 0;
@@ -26,38 +26,6 @@ public class Phase1 {
 	public static BufferedWriter bufferedWriter = null;
 	public static int tempCount = 0;
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd yyyy HH:mm:ss");
-	
-	
-	public static void makeTweetFile() {
-		while(!fileOpen) {
-        	fileCount += 1;
-    		directory = "";
-    		directory += ("./tweets" + fileCount + ".txt");
-    		File file = new File(directory);
-    		if(!file.exists()) {
-    			try {
-					file.createNewFile();
-					try {
-						fileWriter = new FileWriter(file);
-						System.out.println("made file writer");
-					} 
-					catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					fileOpen = true;
-					System.out.println("made file");
-				} 
-    			catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    		}
-    		
-    		bufferedWriter = new BufferedWriter(fileWriter);
-    		System.out.println("made buffer writer");
-        }
-	}
 	
 	  public static void main(String[] args) throws TwitterException {
 	    	ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -104,20 +72,57 @@ public class Phase1 {
 	            	}
 	            	
 	            	
-	            	makeTweetFile();
+	            	if (!fileOpen) {
+	            		fileCount += 1;
+	            		directory = "";
+	            		directory += ("./tweets" + fileCount + ".txt");
+	            		File file = new File(directory);
+	            		if(!file.exists()) {
+	            			try {
+								file.createNewFile();
+								fileOpen = true;
+								System.out.println("made file");
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+	            		}
+	            		
+	            		try {
+							fileWriter = new FileWriter(file);
+							fileOpen = true;
+							System.out.println("made file writer");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	            		
+	            		bufferedWriter = new BufferedWriter(fileWriter);
+	            		System.out.println("made buffer writer");
+	            		
+	            	}
 	            	
+	            	User user = status.getUser();
+	            	String userName = user.getScreenName();
+	            	GeoLocation geoLocation = status.getGeoLocation();
+	            	double longitude = geoLocation.getLongitude();
+	            	double latitude = geoLocation.getLatitude();
+	            	String profileLocation = user.getLocation();
+	            	String tweetText = status.getText();
+	            	tweetText = tweetText.replaceAll("\n", " ");
+	            	Date timeStamp = status.getCreatedAt();
+	            	String dateAndTime = dateFormat.format(timeStamp);
 	            	URLEntity[] urls = status.getURLEntities();
 	            	HashtagEntity[] hashtags = status.getHashtagEntities();
 	            	
-	            	String whatToWrite = "USERNAME: " + status.getUser().getScreenName() + " " +
-	            						 "LONGITUDE: " + status.getGeoLocation().getLongitude() + " " + 
-	            						 "LATITUDE: " + status.getGeoLocation().getLatitude() + " " +
-	            						 "LOCATION: " + status.getUser().getLocation() + " " +
-	            						 "TWEET: " + status.getText().replaceAll("\n", " ") + " " +
-	            						 "TIMESTAMP: " + dateFormat.format(status.getCreatedAt()) + " ";
-	            		
+	            	String whatToWrite = "USERNAME: " + userName + " " +
+	            						 "LONGITUDE: " + longitude + " " + 
+	            						 "LATITUDE: " + latitude + " " +
+	            						 "LOCATION: " + profileLocation + " " +
+	            						 "TWEET: " + tweetText + " " +
+	            						 "TIMESTAMP: " + dateAndTime + " " +
+	            						 "URLS: ";
 	            	
-	            	whatToWrite += "URLS: ";
 	            	
 	            	for (int i = 0; i < urls.length; i++) {
 	            		if (urls[i].getExpandedURL() == null) {
@@ -172,11 +177,7 @@ public class Phase1 {
 	            }
 	        };
 	        
-	        
-	        
-	    	makeTweetFile();
-	        
-	        
+	    	
 	        TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
 	        ts.addListener(listener);
 	        FilterQuery tf = new FilterQuery();
