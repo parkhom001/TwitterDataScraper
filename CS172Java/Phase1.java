@@ -120,9 +120,16 @@ public class phase1 {
 	            						 "LATITUDE: " + latitude + " " +
 	            						 "LOCATION: " + profileLocation + " " +
 	            						 "TWEET: " + tweetText + " " +
-	            						 "TIMESTAMP: " + dateAndTime + " " +
-	            						 "URLS: ";
+	            						 "TIMESTAMP: " + dateAndTime + " ";
 	            	
+	            	
+	            	whatToWrite += "HASHTAGS: ";
+	            	
+	            	for (int i = 0; i < hashtags.length; i++) {
+	            		whatToWrite += hashtags[i].getText() + " ";
+	            	}
+	            	
+	            	whatToWrite += "URLS: ";
 	            	
 	            	for (int i = 0; i < urls.length; i++) {
 	            		if (urls[i].getExpandedURL() == null) {
@@ -155,11 +162,6 @@ public class phase1 {
 	            		}
 	            	}
 	            	
-	            	whatToWrite += "HASHTAGS: ";
-	            	
-	            	for (int i = 0; i < hashtags.length; i++) {
-	            		whatToWrite += hashtags[i].getText() + " ";
-	            	}
 	            		            	
 	            	whatToWrite += "\n";
 	            	
