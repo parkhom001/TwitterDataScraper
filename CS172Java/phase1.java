@@ -1,3 +1,4 @@
+// https://www.tutorialspoint.com/java/java_multithreading.htm
 package cs172_phase1;
 
 import java.util.*;
@@ -31,20 +32,13 @@ import twitter4j.TwitterStream;
 
 import twitter4j.StatusListener;
 
-//class ReentrantLock {
-//	ReentrantLock lock = new ReentrantLock();
-//}
-
-
 
 class MultiThreading extends Thread { //implements Runnable {
-//	   private Thread t;
 	   private Status status;
 	   private User user;
 	   private GeoLocation geoLocation;
 	   private SimpleDateFormat dateFormat;
 	   private String whatToWrite;
-	   private ReentrantLock lock;
 
 	   MultiThreading(Status s, User u, GeoLocation g) {
 		   status = s;
@@ -59,67 +53,67 @@ class MultiThreading extends Thread { //implements Runnable {
 	      try {
 
 
-          	String tweetText = status.getText();
+       	String tweetText = status.getText();
 
-          	tweetText = tweetText.replaceAll("\n", " ");
+       	tweetText = tweetText.replaceAll("\n", " ");
 
-          	URLEntity[] urls = status.getURLEntities();
+       	URLEntity[] urls = status.getURLEntities();
 
-          	HashtagEntity[] hashtags = status.getHashtagEntities();
+       	HashtagEntity[] hashtags = status.getHashtagEntities();
 
-          	
+       	
 
-          	String whatToWrite = "USERNAME: " + user.getScreenName() + " " +
+       	String whatToWrite = "USERNAME: " + user.getScreenName() + " " +
 
-          						 "LONGITUDE: " + geoLocation.getLongitude() + " " + 
+       						 "LONGITUDE: " + geoLocation.getLongitude() + " " + 
 
-          						 "LATITUDE: " + geoLocation.getLatitude() + " " +
+       						 "LATITUDE: " + geoLocation.getLatitude() + " " +
 
-          						 "LOCATION: " + user.getLocation() + " " +
+       						 "LOCATION: " + user.getLocation() + " " +
 
-          						 "TWEET: " + tweetText + " " +
+       						 "TWEET: " + tweetText + " " +
 
-          						 "TIMESTAMP: " + dateFormat.format(status.getCreatedAt()) + " ";
+       						 "TIMESTAMP: " + dateFormat.format(status.getCreatedAt()) + " ";
 
-        	whatToWrite += "HASHTAGS: ";
+     	whatToWrite += "HASHTAGS: ";
 
-        	
+     	
 
-        	for (int i = 0; i < hashtags.length; i++) {
+     	for (int i = 0; i < hashtags.length; i++) {
 
-        		whatToWrite += hashtags[i].getText() + " ";
+     		whatToWrite += hashtags[i].getText() + " ";
 
-        	}
+     	}
 
-        	
+     	
 
-        	whatToWrite += "URLS: ";
-        	
-        	for (int i = 0; i < urls.length; i++) {
+     	whatToWrite += "URLS: ";
+     	
+     	for (int i = 0; i < urls.length; i++) {
 
-        		if (urls[i].getExpandedURL() == null) {
+     		if (urls[i].getExpandedURL() == null) {
 
-        			whatToWrite += urls[i].getURL() + " ";
+     			whatToWrite += urls[i].getURL() + " ";
 
-        		}
+     		}
 
-        		else {
+     		else {
 
-        			whatToWrite += urls[i].getExpandedURL() + " ";
+     			whatToWrite += urls[i].getExpandedURL() + " ";
 
-        		}
+     		}
 
-        	}
+     	}
 
-        	whatToWrite += "URLSTITLE: ";
+     	whatToWrite += "URLSTITLE: ";
 
-        	
+     	
 
-        	for (int i = 0; i < urls.length; i++) {
+     	for (int i = 0; i < urls.length; i++) {
 
-        		if (urls[i].getExpandedURL() == null) {
+     		if (urls[i].getExpandedURL() == null) {
 
-        			try {
+     			try {
 
 						whatToWrite += Jsoup.connect(urls[i].getURL()).get().title() + " ";
 
@@ -131,11 +125,11 @@ class MultiThreading extends Thread { //implements Runnable {
 
 					}
 
-        		}
+     		}
 
-        		else {
+     		else {
 
-        			try {
+     			try {
 
 						whatToWrite += Jsoup.connect(urls[i].getExpandedURL()).get().title() + " ";
 
@@ -147,22 +141,23 @@ class MultiThreading extends Thread { //implements Runnable {
 
 					}
 
-        		}
+     		}
 
-        	}
+     	}
 
-        	
+     	
 
-        		            	
+     		            	
 
-        	whatToWrite += "\n";
-        	try {
+     	whatToWrite += "\n";
+     	try {
+     		phase1.lock.lock();
+				phase1.bufferedWriter.write(whatToWrite);
 
-				bufferedWriter.write(whatToWrite);
+				System.out.println("wrote to buffer writer" +  phase1.tempCount);
 
-				System.out.println("wrote to buffer writer" +  tempCount);
-
-				tempCount += 1;
+				phase1.tempCount += 1;
+				phase1.lock.unlock();
 
 				
 
@@ -178,10 +173,12 @@ class MultiThreading extends Thread { //implements Runnable {
 	      } catch (InterruptedException e) {
 	         System.out.println("Thread interrupted.");
 	      }
-	      System.out.println("Thread  exiting.");
+	      System.out.println("Thread exiting.");
 	   }
 	   
 	}
+
+
 
 
 
@@ -200,7 +197,7 @@ public class phase1 {
 
 	public static int tempCount = 0;
 
-	ReentrantLock lock = new ReentrantLock();
+	public static ReentrantLock lock = new ReentrantLock();
 
 	
 
@@ -271,8 +268,9 @@ public class phase1 {
 	            	if (tempCount >= 10) {
 
 	            		try {
-
+	            			lock.lock();
 							bufferedWriter.close();
+							lock.unlock();
 
 							System.out.println("closed buffer writer");
 
@@ -384,3 +382,4 @@ public class phase1 {
 	    }
 
 }
+
