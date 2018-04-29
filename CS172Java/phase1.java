@@ -50,7 +50,7 @@ class MultiThreading extends Thread { //implements Runnable {
 	   
 	   public void run() {
 
-	      try {
+//	      try {
 
 
        	String tweetText = status.getText();
@@ -61,15 +61,20 @@ class MultiThreading extends Thread { //implements Runnable {
 
        	HashtagEntity[] hashtags = status.getHashtagEntities();
 
-       	
 
-       	String whatToWrite = "USERNAME: " + user.getScreenName() + " " +
+       	whatToWrite = "USERNAME: " + user.getScreenName() + " " +
 
-       						 "LONGITUDE: " + geoLocation.getLongitude() + " " + 
+       						 "LONGITUDE: ";
+       	if(geoLocation != null) {
+       		whatToWrite += geoLocation.getLongitude() + " " + 
 
-       						 "LATITUDE: " + geoLocation.getLatitude() + " " +
+       						 "LATITUDE: " + geoLocation.getLatitude() + " ";
+       	}
+       	else {
+       		whatToWrite += "null " + "LATITUDE: null";
+       	}
 
-       						 "LOCATION: " + user.getLocation() + " " +
+       						whatToWrite += "LOCATION: " + user.getLocation() + " " +
 
        						 "TWEET: " + tweetText + " " +
 
@@ -152,6 +157,7 @@ class MultiThreading extends Thread { //implements Runnable {
      	whatToWrite += "\n";
      	try {
      		phase1.lock.lock();
+//     		if(whatToWrite != "")
 				phase1.bufferedWriter.write(whatToWrite);
 
 				System.out.println("wrote to buffer writer" +  phase1.tempCount);
@@ -166,13 +172,14 @@ class MultiThreading extends Thread { //implements Runnable {
 				// TODO Auto-generated catch block
 
 				e.printStackTrace();
+				phase1.lock.unlock();
 
 			}
 
 	    	  
-	      } catch (InterruptedException e) {
-	         System.out.println("Thread interrupted.");
-	      }
+//	      } catch (InterruptedException e) {
+//	         System.out.println("Thread interrupted.");
+//	      }
 	      System.out.println("Thread exiting.");
 	   }
 	   
@@ -209,13 +216,13 @@ public class phase1 {
 
 	    	cb.setDebugEnabled(true)
 
-	    		.setOAuthConsumerKey("Qsfx4W45GV4ntCUOwhp47CWRh")
+	    		.setOAuthConsumerKey("KtKQ2qJCCQgOCayoB2sufBrCo")
 
-	    		.setOAuthConsumerSecret("fetMzlsvMQsVu3I9k3O4yb1fbgDFy9GoXMyTcNnaCiHeQhMVMw")
+	    		.setOAuthConsumerSecret("QKfdRIBNmggPd0o5xk2HBrR4YYVdOhZtNtT9YCVD4Jcv4pqRzu")
 
-	    		.setOAuthAccessToken("982370303991889920-rqwZSEhHG3ln8YkoRacp0IP2w4OAOAV")
+	    		.setOAuthAccessToken("983455519540051969-HjPaMhsTvPhD4m8pfv32OcbATdBaz8v")
 
-	    		.setOAuthAccessTokenSecret("Z8TOwjlN3tl30CnMhI2yHanCJirdJn0eOwdweHhA6M1C4");
+	    		.setOAuthAccessTokenSecret("cxazI2Nn0I8VgWYx6PGiIsRKM2WgOemd9wMeCy8AKFsyZ");
 
 	    	
 
@@ -343,6 +350,7 @@ public class phase1 {
 	            		
 
 
+	            		bufferedWriter = new BufferedWriter(fileWriter);
 	            		System.out.println("made buffer writer");
 
 	            		
