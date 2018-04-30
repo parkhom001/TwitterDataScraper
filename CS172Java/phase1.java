@@ -272,7 +272,7 @@ public class phase1 {
 
 	            	
 
-	            	if (tempCount >= 10) {
+	            	if (tempCount >= 1000) {
 
 	            		try {
 	            			lock.lock();
@@ -349,19 +349,30 @@ public class phase1 {
 
 	            		
 
-
+	            		lock.lock();
 	            		bufferedWriter = new BufferedWriter(fileWriter);
 	            		System.out.println("made buffer writer");
+	            		lock.unlock();
 
 	            		
 
 	            	}
 
-	            	
 
+	            	if(tempCount % 5 == 0) {
+	            		try {
+							bufferedWriter.flush();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	            		
+	            	}
 
-	            	MultiThreading M = new MultiThreading(status, status.getUser(), status.getGeoLocation());
-	            	M.start();
+	            	if(status.getUser().getLang().equals("en")) {
+	            		MultiThreading M = new MultiThreading(status, status.getUser(), status.getGeoLocation());
+	            		M.start();
+	            	}
 
 	            }
 
@@ -375,11 +386,12 @@ public class phase1 {
 
 	        ts.addListener(listener);
 
-	        FilterQuery tf = new FilterQuery();
+	     //   FilterQuery tf = new FilterQuery();
 
-	        tf.locations(new double[][]{new double[]{-118.417616,34.029797}, new double[]{-117.301561,34.106632}});
+//	        tf.locations(new double[][]{new double[]{-118.417616,34.029797}, new double[]{-117.301561,34.106632}});
 
-	    	ts.filter(tf);
+	//    	ts.filter(tf);
+	        ts.sample();
 
 	    	
 
