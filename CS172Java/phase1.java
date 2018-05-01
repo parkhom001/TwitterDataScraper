@@ -1,5 +1,4 @@
-// https://www.tutorialspoint.com/java/java_multithreading.htm
-package cs172_phase1;
+package relPackages;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -62,25 +61,32 @@ class MultiThreading extends Thread { //implements Runnable {
        	HashtagEntity[] hashtags = status.getHashtagEntities();
 
 
-       	whatToWrite = "USERNAME: " + user.getScreenName() + " " +
-
-       						 "LONGITUDE: ";
+       	whatToWrite = "~USERNAME>: " + user.getScreenName() + " " + "~VERIFIED>: ";
+       	
+       	if (user.isVerified())
+       	{
+       		whatToWrite += "True ";
+       	}
+       	else
+       	{
+       		whatToWrite += "False ";
+       	}
+       	
+       			
+       	whatToWrite += "~LONGITUDE>: ";
        	if(geoLocation != null) {
        		whatToWrite += geoLocation.getLongitude() + " " + 
-
-       						 "LATITUDE: " + geoLocation.getLatitude() + " ";
+      						 "~LATITUDE>: " + geoLocation.getLatitude() + " ";
        	}
        	else {
-       		whatToWrite += "null " + "LATITUDE: null";
+       		whatToWrite += "null " + "~LATITUDE>: null ";
        	}
-
-       						whatToWrite += "LOCATION: " + user.getLocation() + " " +
-
-       						 "TWEET: " + tweetText + " " +
-
-       						 "TIMESTAMP: " + dateFormat.format(status.getCreatedAt()) + " ";
-
-     	whatToWrite += "HASHTAGS: ";
+       	whatToWrite += "~LOCATION>: " + user.getLocation() + " " +
+       			"~TWEET>: " + tweetText + " " + "~FAVORITECOUNT>: " + status.getFavoriteCount() + " " + 
+       			"~RETWEETCOUNT>" + status.getRetweetCount() +" " +
+       			"~TIMESTAMP>: " + dateFormat.format(status.getCreatedAt()) + " ";
+       
+       	whatToWrite += "~HASHTAGS>: ";
 
      	
 
@@ -92,7 +98,7 @@ class MultiThreading extends Thread { //implements Runnable {
 
      	
 
-     	whatToWrite += "URLS: ";
+     	whatToWrite += "~URLS>: ";
      	
      	for (int i = 0; i < urls.length; i++) {
 
@@ -110,7 +116,7 @@ class MultiThreading extends Thread { //implements Runnable {
 
      	}
 
-     	whatToWrite += "URLSTITLE: ";
+     	whatToWrite += "~URLSTITLE>: ";
 
      	
 
@@ -147,14 +153,12 @@ class MultiThreading extends Thread { //implements Runnable {
 					}
 
      		}
-
      	}
 
      	
 
      		            	
-
-     	whatToWrite += "\n";
+ 		whatToWrite += "~LANGUAGE>: " + user.getLang() + " " + "~FOLLOWERCOUNT>: " + user.getFollowersCount() + " " + "~FOLLOWINGCOUNT>: "+ " " + user.getFriendsCount() + "\n";
      	try {
      		phase1.lock.lock();
 //     		if(whatToWrite != "")
@@ -203,7 +207,6 @@ public class phase1 {
 	public static BufferedWriter bufferedWriter = null;
 
 	public static int tempCount = 0;
-
 	public static ReentrantLock lock = new ReentrantLock();
 
 	
@@ -226,6 +229,7 @@ public class phase1 {
 
 	    	
 
+	        final TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
 	    	    	
 
 	        StatusListener listener = new StatusListener() {
@@ -265,14 +269,20 @@ public class phase1 {
 	            
 
 	            public void onStatus(Status status) {
-
+	            	
 	            	// we want to store in this format
 
 	            	// username: geolocation: profilelocation: tweet: timestamp: url: urltitle:
-
+	            	
+	            	if (fileCount > 1)
+	            	{
+	            		ts.cleanUp();
+	            		ts.shutdown();
+	            		
+	            	}
 	            	
 
-	            	if (tempCount >= 1000) {
+	            	if (tempCount >= 25000) {
 
 	            		try {
 	            			lock.lock();
@@ -376,16 +386,9 @@ public class phase1 {
 
 	            }
 
-	        };
-
-	        
-
-	    	
-
-	        TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
-
+	        };	        
 	        ts.addListener(listener);
-
+	        
 	     //   FilterQuery tf = new FilterQuery();
 
 //	        tf.locations(new double[][]{new double[]{-118.417616,34.029797}, new double[]{-117.301561,34.106632}});
