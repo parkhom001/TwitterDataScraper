@@ -142,16 +142,40 @@ public class phase1 {
 	public static BufferedWriter bufferedWriter = null;
 	public static int tempCount = 0;
 	public static ReentrantLock lock = new ReentrantLock();
+	public static String path = "";
+	public static int tweetsPerFile = 0;
+	public static int numOfFiles = 0;
 
 	
 	  public static void main(String[] args) throws TwitterException {
+		  
+		  	if (args.length >= 3) {
+		  		path = args[2];
+		  	}
+		  	else {
+		  		path = ".";
+		  	}
+		  	
+		  	if (args.length >= 2) {
+		  		tweetsPerFile = Integer.parseInt(args[1]);
+		  	}
+		  	else {
+		  		tweetsPerFile = 25000;
+		  	}
+		  	
+		  	if (args.length >= 1) {
+		  		numOfFiles = Integer.parseInt(args[0]);
+		  	}
+		  	else {
+		  		numOfFiles = 500;
+		  	}
 
 	    	ConfigurationBuilder cb = new ConfigurationBuilder();
 	    	cb.setDebugEnabled(true)
-	    	.setOAuthConsumerKey("")
-	    	.setOAuthConsumerSecret("")
-	    	.setOAuthAccessToken("")
-	    	.setOAuthAccessTokenSecret("");
+	    	.setOAuthConsumerKey("eZ1YneP7roWxY8QQCwd4cP1Qk")
+	    	.setOAuthConsumerSecret("39kd43mjJkwhQ846IFS1O1OCse8qHuGCWBKJkRnVTduX7hJ0cV")
+	    	.setOAuthAccessToken("990082069710581760-BS01fXCOmTlQfYQ8MZhdqMpvCm27ypv")
+	    	.setOAuthAccessTokenSecret("Ryto6EbCElN9ZD4XyLumGKVaOuuGCQN0oWPrG6vJTE43K");
 
 	        final TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
 
@@ -181,13 +205,13 @@ public class phase1 {
 
 	            public void onStatus(Status status) {
 
-	            	if (fileCount > 500) //500 files for approximately 5gb
+	            	if (fileCount > numOfFiles) //500 files for approximately 5gb
 	            	{	            		
 	            		ts.cleanUp();
 	            		ts.shutdown();	          
 	            	}
 	            	
-	            	if (tempCount >= 25000) {  //25000 tweets for approximately 10mb files
+	            	if (tempCount >= tweetsPerFile) {  //25000 tweets for approximately 10mb files
 	            		try {
 	            			lock.lock();
 							bufferedWriter.close();
@@ -204,7 +228,7 @@ public class phase1 {
 	            	if (!fileOpen) {
 	            		fileCount += 1;
 	            		directory = "";
-	            		directory += ("./tweets" + fileCount + ".txt");
+	            		directory += (path + "/tweets" + fileCount + ".txt");
 	            		File file = new File(directory);
 
 	            		if(!file.exists()) {
@@ -235,7 +259,9 @@ public class phase1 {
 
 	            	if(tempCount % 5 == 0) {
 	            		try {
+	            			lock.lock();
 							bufferedWriter.flush();
+							lock.unlock();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -256,6 +282,3 @@ public class phase1 {
 
 	    }
 }
-
-
-
